@@ -134,7 +134,7 @@ def check() -> dict:
     if not SCORING_ACTIVE:
         return {**base, "score": None, "zone": "CALIBRATING",
                 "detail": detail,
-                "hint": "Baseline collected. Run `session-recall calibrate --analyze`, then hand-edit thresholds + flip SCORING_ACTIVE=True."}
+                "hint": "Baseline collected. Run `claude-mem calibrate --analyze`, then hand-edit thresholds + flip SCORING_ACTIVE=True."}
 
     # Stage 2 scoring (only reached after operator activates)
     if t3 > T3_POLICY_FLOOR:

@@ -50,11 +50,11 @@ def _open(path: pathlib.Path | None = None) -> sqlite3.Connection:
 
     conn.close()
     if path != INDEX_PATH or not path.exists():
-        raise RuntimeError("Index schema is out of date — run: session-recall cc-index --rebuild")
+        raise RuntimeError("Index schema is out of date — run: claude-mem cc-index --rebuild")
     path.unlink()
     raise RuntimeError(
         "Index schema was out of date and has been removed. "
-        "Run: session-recall cc-index --rebuild"
+        "Run: claude-mem cc-index --rebuild"
     )
 
 

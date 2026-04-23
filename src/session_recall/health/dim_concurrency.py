@@ -11,7 +11,7 @@ def check() -> dict:
     path = Path(TELEMETRY_PATH)
     if not path.exists():
         return {"name": "Concurrency", "score": 5, "zone": "AMBER",
-                "detail": "No telemetry data yet", "hint": "Run session-recall a few times first"}
+                "detail": "No telemetry data yet", "hint": "Run claude-mem a few times first"}
     try:
         entries = json.loads(path.read_text()).get("entries", [])
     except Exception:
@@ -19,7 +19,7 @@ def check() -> dict:
                 "detail": "Telemetry file unreadable", "hint": "Delete and let it regenerate"}
     if not entries:
         return {"name": "Concurrency", "score": 5, "zone": "AMBER",
-                "detail": "Empty telemetry", "hint": "Run session-recall a few times first"}
+                "detail": "Empty telemetry", "hint": "Run claude-mem a few times first"}
     total_busy = sum(e.get("busy_hits", 0) for e in entries)
     busy_rate = (total_busy / len(entries)) * 100
     avg_attempts = sum(e.get("attempts", 1) for e in entries) / len(entries)

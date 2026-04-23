@@ -19,11 +19,11 @@ def _print_hook_status(hook_result: dict, settings_path: pathlib.Path) -> None:
 def _print_claude_md_status(proj_result: dict, claude_md: pathlib.Path) -> None:
     action = proj_result["action"]
     if action == "already_present":
-        print(f"✓ CLAUDE.md already has session-recall block: {claude_md}")
+        print(f"✓ CLAUDE.md already has claude-mem block: {claude_md}")
     elif action == "dry_run":
-        print(f"[dry-run] Would write session-recall block to {claude_md}")
+        print(f"[dry-run] Would write claude-mem block to {claude_md}")
     else:
-        print(f"✓ session-recall block {action}: {claude_md}")
+        print(f"✓ claude-mem block {action}: {claude_md}")
 
 
 def _print_mcp_status(mcp_result: dict, config_path: pathlib.Path) -> None:
@@ -31,9 +31,9 @@ def _print_mcp_status(mcp_result: dict, config_path: pathlib.Path) -> None:
     if action == "already_wired":
         print(f"✓ MCP server already configured: {config_path}", file=sys.stderr)
     elif action == "dry_run":
-        print(f"[dry-run] Would add session-recall MCP server to {config_path}", file=sys.stderr)
+        print(f"[dry-run] Would add claude-mem MCP server to {config_path}", file=sys.stderr)
     else:
-        print(f"✓ MCP server wired: {config_path}", file=sys.stderr)
+        print(f"✓ claude-mem MCP server wired: {config_path}", file=sys.stderr)
 
 
 def run(args) -> int:

@@ -12,7 +12,7 @@ def test_wire_mcp_config_new_file(tmp_path):
     assert config.exists()
     data = json.loads(config.read_text(encoding="utf-8"))
     assert "mcpServers" in data
-    assert "session-recall" in data["mcpServers"]
+    assert "claude-mem" in data["mcpServers"]
 
 
 def test_wire_mcp_config_idempotent(tmp_path):
@@ -31,7 +31,7 @@ def test_wire_mcp_config_merges_existing_keys(tmp_path):
     data = json.loads(config.read_text(encoding="utf-8"))
     assert data["globalShortcut"] == "Ctrl+Space"
     assert data["theme"] == "dark"
-    assert "session-recall" in data["mcpServers"]
+    assert "claude-mem" in data["mcpServers"]
 
 
 def test_wire_mcp_config_dry_run(tmp_path):

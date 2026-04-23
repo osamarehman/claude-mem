@@ -1,4 +1,4 @@
-"""Detect Claude Code installation surfaces and wire session-recall hooks."""
+"""Detect Claude Code installation surfaces and wire claude-mem hooks."""
 from __future__ import annotations
 import copy
 import json
@@ -114,7 +114,7 @@ def detect_surfaces() -> list[Surface]:
     ]
 
 
-_HOOK_COMMAND = "session-recall list --json --limit 5"
+_HOOK_COMMAND = "claude-mem list --json --limit 5"
 _HOOK_BLOCK = {
     "matcher": "",
     "hooks": [{"type": "command", "command": _HOOK_COMMAND}],
@@ -163,7 +163,7 @@ def wire_hooks(settings_path: pathlib.Path, *, dry_run: bool = False) -> dict:
     ss_hooks = data.setdefault("hooks", {}).setdefault("SessionStart", [])
 
     already_wired = any(
-        inner.get("command", "").startswith("session-recall")
+        inner.get("command", "").startswith("claude-mem")
         for h in ss_hooks
         for inner in h.get("hooks", [])
     )
@@ -190,24 +190,24 @@ def wire_hooks(settings_path: pathlib.Path, *, dry_run: bool = False) -> dict:
     }
 
 
-_SENTINEL = "<!-- session-recall -->"
+_SENTINEL = "<!-- claude-mem -->"
 
 _CLAUDE_MD_BLOCK = f"""{_SENTINEL}
-## Session Recall — run on every new conversation
+## claude-mem — run on every new conversation
 
-Run `session-recall list --json --limit 5` at the start of every session
+Run `claude-mem list --json --limit 5` at the start of every session
 to recall recent context for this repository (~50 tokens).
 
-Use `session-recall search "<topic>" --json` to find specific past work.
-Use `session-recall show <session-id> --json` for full session detail.
+Use `claude-mem search "<topic>" --json` to find specific past work.
+Use `claude-mem show <session-id> --json` for full session detail.
 
-If session-recall is not installed or errors, continue silently.
+If claude-mem is not installed or errors, continue silently.
 {_SENTINEL}"""
 
 
 def write_claude_md(claude_md_path: pathlib.Path, *, dry_run: bool = False) -> dict:
     """
-    Append (or update) the session-recall block in a CLAUDE.md file.
+    Append (or update) the claude-mem block in a CLAUDE.md file.
     Returns {"action": "written"|"updated"|"already_present"|"dry_run", "path": str}.
     """
     existing = ""
@@ -241,7 +241,7 @@ def write_claude_md(claude_md_path: pathlib.Path, *, dry_run: bool = False) -> d
 
 
 _MCP_ENTRY = {
-    "command": "session-recall",
+    "command": "claude-mem",
     "args": ["serve"],
     "env": {},
 }
@@ -260,15 +260,15 @@ def _default_mcp_config_path() -> pathlib.Path:
 
 def wire_mcp_config(config_path: pathlib.Path, *, dry_run: bool = False) -> dict:
     """
-    Add session-recall MCP server entry to claude_desktop_config.json.
+    Add claude-mem MCP server entry to claude_desktop_config.json.
     Returns {"action": "wired"|"already_wired"|"dry_run", "path": str}.
     """
     data = _read_json(config_path)
     servers = data.setdefault("mcpServers", {})
-    if "session-recall" in servers:
+    if "claude-mem" in servers:
         return {"changed": False, "path": str(config_path), "action": "already_wired"}
 
-    servers["session-recall"] = copy.deepcopy(_MCP_ENTRY)
+    servers["claude-mem"] = copy.deepcopy(_MCP_ENTRY)
 
     if dry_run:
         return {"changed": True, "action": "dry_run", "path": str(config_path)}

@@ -3,7 +3,7 @@ import sys
 
 _IMPORT_ERROR_MSG = (
     "MCP support requires the 'mcp' package.\n"
-    "Install with: pip install \"claude-auto-mem[mcp]\""
+    "Install with: pip install \"claude-mem[mcp]\""
 )
 
 

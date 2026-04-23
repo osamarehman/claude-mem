@@ -1,11 +1,11 @@
-# session-recall JSON API Reference
+# claude-mem JSON API Reference
 
 All `--json` output shapes are stable as of v1.0. Fields marked `[new in vX.Y]` may be
 added in minor versions; no fields will be removed or renamed in a minor version.
 
 This document describes the exact JSON emitted by every command that supports machine-readable
 output. Use it as a contract when building tools, scripts, or integrations on top of
-`session-recall`.
+`claude-mem`.
 
 ---
 
@@ -29,7 +29,7 @@ List recent sessions, optionally scoped to a repository.
 
 **Usage:**
 ```
-session-recall list --json [--repo REPO] [--limit N] [--days N]
+claude-mem list --json [--repo REPO] [--limit N] [--days N]
 ```
 
 **Top-level envelope:**
@@ -68,7 +68,7 @@ session-recall list --json [--repo REPO] [--limit N] [--days N]
     {
       "id_short": "a1b2c3d4",
       "id_full": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "repository": "auto-memory",
+      "repository": "claude-mem",
       "branch": "main",
       "summary": "Added JSON output to prune command",
       "date": "2026-04-23",
@@ -79,7 +79,7 @@ session-recall list --json [--repo REPO] [--limit N] [--days N]
     {
       "id_short": "b2c3d4e5",
       "id_full": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
-      "repository": "auto-memory",
+      "repository": "claude-mem",
       "branch": "feature/health",
       "summary": "Implemented health check dimensions",
       "date": "2026-04-22",
@@ -99,7 +99,7 @@ List recently touched files across sessions, optionally scoped to a repository.
 
 **Usage:**
 ```
-session-recall files --json [--repo REPO] [--limit N] [--days N]
+claude-mem files --json [--repo REPO] [--limit N] [--days N]
 ```
 
 **Top-level envelope:**
@@ -127,7 +127,7 @@ session-recall files --json [--repo REPO] [--limit N] [--days N]
 
 ```json
 {
-  "repo": "auto-memory",
+  "repo": "claude-mem",
   "count": 3,
   "files": [
     {
@@ -160,7 +160,7 @@ Full-text search across all indexed session turns and summaries.
 
 **Usage:**
 ```
-session-recall search "<query>" --json [--repo REPO] [--limit N] [--days N]
+claude-mem search "<query>" --json [--repo REPO] [--limit N] [--days N]
 ```
 
 **Top-level envelope:**
@@ -200,7 +200,7 @@ parent session metadata:
       "session_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "user_msg": "implement the health check command with 9 dimensions",
       "summary": "Implemented health check dimensions",
-      "repository": "auto-memory",
+      "repository": "claude-mem",
       "branch": "feature/health",
       "last_seen": "2026-04-22T11:45:00"
     },
@@ -208,7 +208,7 @@ parent session metadata:
       "session_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "user_msg": "add --json flag to health command",
       "summary": "Added JSON output to health command",
-      "repository": "auto-memory",
+      "repository": "claude-mem",
       "branch": "main",
       "last_seen": "2026-04-21T09:00:00"
     }
@@ -224,7 +224,7 @@ Show full detail for a single session, including all turns and files touched.
 
 **Usage:**
 ```
-session-recall show <session-id> --json [--turns N]
+claude-mem show <session-id> --json [--turns N]
 ```
 
 `<session-id>` may be a full UUID or any unambiguous prefix (minimum 8 characters).
@@ -274,8 +274,8 @@ The top level is a single session detail object (not wrapped in an envelope).
 ```json
 {
   "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "cwd": "/home/user/projects/auto-memory",
-  "repository": "auto-memory",
+  "cwd": "/home/user/projects/claude-mem",
+  "repository": "claude-mem",
   "branch": "main",
   "summary": "Added JSON output to prune command",
   "first_seen": "2026-04-23T14:05:01",
@@ -314,7 +314,7 @@ Run all 9 health-check dimensions and report an overall score.
 
 **Usage:**
 ```
-session-recall health --json
+claude-mem health --json
 ```
 
 **Output object:**
@@ -377,7 +377,7 @@ Report the current state of the Claude Code session index without rebuilding it.
 
 **Usage:**
 ```
-session-recall cc-index --status
+claude-mem cc-index --status
 ```
 
 Note: `cc-index --status` does not accept a `--json` flag; it always emits JSON to stdout
@@ -432,7 +432,7 @@ Detect Claude Code installation surfaces and optionally wire hooks or MCP config
 
 **Usage:**
 ```
-session-recall install-mode --json [--setup] [--dry-run] [--project] [--project-path PATH] [--mcp]
+claude-mem install-mode --json [--setup] [--dry-run] [--project] [--project-path PATH] [--mcp]
 ```
 
 **Output object:**
@@ -525,7 +525,7 @@ flag is supplied.
     "changed": true,
     "path": "/home/user/.claude/settings.json",
     "action": "dry_run",
-    "hook_command": "session-recall list --json --limit 5"
+    "hook_command": "claude-mem list --json --limit 5"
   }
 }
 ```
@@ -538,7 +538,7 @@ Export full session details (all turns and files) as a JSON array.
 
 **Usage:**
 ```
-session-recall export --format json [--session SESSION_ID] [--repo REPO] [--days N] [--limit N] [--output FILE]
+claude-mem export --format json [--session SESSION_ID] [--repo REPO] [--days N] [--limit N] [--output FILE]
 ```
 
 When `--output` is provided the JSON is written to the file; otherwise it is printed to
@@ -588,8 +588,8 @@ shape to the object returned by [`show --json`](#show---json).
 [
   {
     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-    "cwd": "/home/user/projects/auto-memory",
-    "repository": "auto-memory",
+    "cwd": "/home/user/projects/claude-mem",
+    "repository": "claude-mem",
     "branch": "main",
     "summary": "Added JSON output to prune command",
     "first_seen": "2026-04-23T14:05:01",
@@ -626,7 +626,7 @@ seen within the specified number of days.
 
 **Usage:**
 ```
-session-recall prune --json [--days N] [--dry-run]
+claude-mem prune --json [--days N] [--dry-run]
 ```
 
 **Output object:**

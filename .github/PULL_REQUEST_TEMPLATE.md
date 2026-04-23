@@ -14,7 +14,7 @@
 
 ## Checklist
 
-- [ ] Tests pass (`pytest src/session_recall/tests/ -q`)
+- [ ] Tests pass (`pytest src/ -q`)
 - [ ] Ruff clean (`ruff check src/`)
 - [ ] Docs updated if needed
 - [ ] No new dependencies without discussion

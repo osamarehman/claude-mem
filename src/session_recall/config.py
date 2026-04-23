@@ -1,4 +1,4 @@
-"""Configuration constants for auto-memory CLI."""
+"""Configuration constants for claude-mem CLI."""
 import os
 from pathlib import Path
 
@@ -9,7 +9,7 @@ DB_PATH = os.environ.get(
 
 TELEMETRY_PATH = os.environ.get(
     "SESSION_RECALL_TELEMETRY",
-    str(Path.home() / ".copilot" / "scripts" / ".session-recall-stats.json"),
+    str(Path.home() / ".claude" / ".claude-mem-stats.json"),
 )
 
 RETRY_DELAYS_MS = [50, 150, 450]

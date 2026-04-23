@@ -3,7 +3,7 @@ from ..db.connect import connect_ro
 from ..db.schema_check import schema_check
 from ..config import DB_PATH
 
-HINT = "Run `session-recall schema-check` for details"
+HINT = "Run `claude-mem schema-check` for details"
 
 
 def check() -> dict:

@@ -11,7 +11,7 @@ We will respond within 48 hours and work with you to understand and address the 
 
 ## Scope
 
-auto-memory is a **read-only** query tool. It does not write to any database or modify any files. However, it reads from a local SQLite database that may contain conversation history, so:
+claude-mem is a **read-only** query tool. It does not write to any database or modify any files. However, it reads from a local SQLite database that may contain conversation history, so:
 
 - Never log or transmit database contents externally
 - Sanitize all output displayed in terminals (we strip ANSI escape sequences)

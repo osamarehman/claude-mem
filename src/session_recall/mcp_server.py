@@ -1,9 +1,9 @@
-"""MCP tool server for session-recall (stdio transport)."""
+"""MCP tool server for claude-mem (stdio transport)."""
 from __future__ import annotations
 
 _IMPORT_ERROR_MSG = (
     "MCP support requires the 'mcp' package.\n"
-    "Install with: pip install \"claude-auto-mem[mcp]\""
+    "Install with: pip install \"claude-mem[mcp]\""
 )
 
 try:
@@ -16,13 +16,13 @@ else:
 
 
 def build_server(backend_name: str | None = None) -> "FastMCP":
-    """Create FastMCP server and register session-recall tools."""
+    """Create FastMCP server and register claude-mem tools."""
     if FastMCP is None:
         raise ImportError(_IMPORT_ERROR_MSG) from _IMPORT_EXC
 
     from .backends import get_backend
 
-    srv = FastMCP("session-recall")
+    srv = FastMCP("claude-mem")
 
     @srv.tool()
     def session_list(

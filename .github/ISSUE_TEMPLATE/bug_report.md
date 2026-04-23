@@ -11,7 +11,7 @@ A clear description of what the bug is.
 
 **To reproduce**
 Steps to reproduce:
-1. Run `session-recall ...`
+1. Run `claude-mem ...`
 2. See error
 
 **Expected behavior**
@@ -23,12 +23,11 @@ What actually happened (include error messages if any).
 **Environment**
 - OS: [e.g. macOS 15, Ubuntu 24.04]
 - Python version: [e.g. 3.12]
-- auto-memory version: [e.g. 0.1.0]
-- Copilot CLI version: [e.g. 1.0.17]
+- claude-mem version: [e.g. 1.0.3]
 
-**session-recall health output**
+**claude-mem health output**
 ```
-Paste output of: session-recall health
+Paste output of: claude-mem health
 ```
 
 **Additional context**

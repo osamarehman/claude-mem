@@ -1,4 +1,4 @@
-"""Telemetry ring buffer for session-recall invocations."""
+"""Telemetry ring buffer for claude-mem invocations."""
 import hashlib
 import json, time
 from pathlib import Path

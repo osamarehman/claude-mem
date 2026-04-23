@@ -8,7 +8,7 @@ version = "1.0.3"
 description = "Persistent session memory for Claude Code. Indexes your session history locally and injects context automatically. Zero dependencies."
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "Desi Villanueva", email = "217994822+dezgit2025@users.noreply.github.com"}]
+authors = [{name = "Usama Rehman", email = "paradigmx@gmail.com"}]
 readme = "README.md"
 keywords = ["claude", "claude-code", "anthropic", "session-memory", "context-window", "mcp", "ai-tools", "llm", "recall", "cli", "sqlite", "developer-tools"]
 classifiers = [

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "claude-mem"
 version = "1.0.0"
-description = "Session recall for Claude Code — zero-dependency CLI that gives Claude instant memory of past sessions"
+description = "Claude Code gets amnesia every 20-30 turns. This fixes it. Zero-dependency session recall CLI."
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Desi Villanueva", email = "217994822+dezgit2025@users.noreply.github.com"}]

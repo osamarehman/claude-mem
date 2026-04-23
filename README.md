@@ -1,8 +1,8 @@
 # claude-mem
 
-**Claude Code gets amnesia every 20–30 turns. This fixes it.**
+**Persistent session memory for Claude Code. Zero dependencies. ~50 tokens.**
 
-Zero-dependency Python CLI that gives Claude instant recall of past sessions — read-only, schema-checked, ~50 tokens per context injection.
+Every time Claude Code starts a new conversation, it starts cold — no memory of what you built yesterday, which files you touched, or what decisions you made. `claude-mem` solves this by indexing your Claude session history locally and injecting the relevant context automatically at the start of each conversation.
 
 [![PyPI](https://img.shields.io/pypi/v/claude-mem)](https://pypi.org/project/claude-mem/)
 [![CI](https://github.com/osamarehman/claude-mem/actions/workflows/ci.yml/badge.svg)](https://github.com/osamarehman/claude-mem/actions/workflows/ci.yml)
@@ -12,211 +12,151 @@ Zero-dependency Python CLI that gives Claude instant recall of past sessions —
 
 ---
 
+## The Problem
+
+Claude Code stores every conversation under `~/.claude/projects/` as JSONL files, but it never reads them back. Start a new session and you're back to square one — Claude doesn't know what branch you're on, which bug you were chasing, or that you already tried the obvious approach and it didn't work.
+
+The result: the first 5–10 minutes of every session go toward re-orienting Claude. Multiply that by every session across every project and it adds up fast.
+
+---
+
+## How claude-mem Fixes It
+
+`claude-mem` reads those JSONL files, builds a local SQLite FTS5 index, and wires a `SessionStart` hook into `~/.claude/settings.json`. When a new Claude Code conversation opens, the hook runs `claude-mem list --json` and injects a compact summary of your recent sessions — what you were working on, which files you touched, where you left off. The whole injection is around 50 tokens.
+
+```
+New Claude session opens
+        │
+        ▼
+SessionStart hook fires
+        │
+        ▼
+claude-mem reads ~/.claude/.sr-index.db
+        │
+        ▼
+~50-token summary injected into context
+  "Last session: fixed token refresh race condition in
+   src/auth/refresh.py — edge case test still failing"
+        │
+        ▼
+Claude is immediately oriented. No re-exploration needed.
+```
+
+---
+
 ## Quickstart
 
 ```bash
 pip install claude-mem
-claude-mem cc-index --rebuild     # index your ~/.claude/projects/ sessions
-claude-mem install-mode --setup   # wire SessionStart hook → auto-injects context on every new session
+claude-mem cc-index                   # build the index from your session history
+claude-mem install-mode --setup       # wire the SessionStart hook
 ```
 
-That's it. Every new Claude Code conversation now receives ~50 tokens of recent session context before you type a single word.
+Done. The next Claude Code session you open will have context from your previous work.
 
-For per-project wiring (version-controlled, visible to teammates):
+To add per-project memory (checked into your repo, visible to your team):
 
 ```bash
-claude-mem install-mode --project  # adds a sentinel-guarded block to ./CLAUDE.md
+claude-mem install-mode --project     # writes a sentinel-guarded block to CLAUDE.md
 ```
-
----
-
-## The Problem
-
-Claude Code compacts every 20–30 turns. Each compaction leaves Claude slightly less oriented — which burns more tokens re-explaining your project, which triggers the next compaction sooner. It's a death spiral.
-
-```
-200,000  tokens — context window (theoretical max)
-120,000  tokens — effective limit before quality degrades (~60%)
- -65,000  tokens — MCP tools
- -10,000  tokens — instruction files
-=========
- ~45,000  tokens — what you actually have before coherence drops
-```
-
-**I timed it over a week: 68 minutes per day lost to re-orientation.**
-
----
-
-## Before & After
-
-**Without claude-mem** — new session on an ongoing project:
-
-```
-You: Fix the failing test in the auth module
-
-Claude: Let me explore the project structure...
-        find . -name "*.py" | head -50           ← 2K tokens
-        grep -r "test.*auth" tests/              ← 5K tokens
-        cat tests/test_auth.py                   ← 3K tokens
-        ...which test is failing?
-
-You: The token refresh edge case we were working on yesterday
-```
-*~16K tokens burned. 8 minutes. Claude still not oriented.*
-
-**With claude-mem** — same scenario:
-
-```
-You: Fix the failing test in the auth module
-
-Claude: [auto-recall injected at session start]
-        → Last session: "token refresh race condition — one edge case
-          still failing on expired token + network timeout combo"
-        → Files: src/auth/refresh.py, tests/test_refresh_edge_cases.py
-
-        I can see the failing test. Let me look at that specific case...
-        cat tests/test_refresh_edge_cases.py     ← 1K tokens (targeted)
-```
-*~1K tokens. 30 seconds. Immediately productive.*
-
----
-
-## How It Works
-
-Claude Code writes every session to `~/.claude/projects/` as JSONL files. `claude-mem` builds a local SQLite FTS5 index over those files and injects a ~50-token summary at the start of each new session via a `SessionStart` hook.
-
-```
-~/.claude/settings.json
-  SessionStart hook
-       │
-       ▼
-  claude-mem CLI
-  (pure Python, zero deps)
-       │
-       ▼
-  ~/.claude/.sr-index.db
-  (SQLite FTS5, built from ~/.claude/projects/ JSONL)
-       │ never writes to Claude's own files
-       ▼
-  ~50 tokens injected into conversation context
-```
-
-- **Zero dependencies** — stdlib only (`sqlite3`, `json`, `argparse`, `pathlib`)
-- **Read-only** on Claude's data — never modifies `~/.claude/projects/`
-- **FTS5 full-text search** — finds sessions by content, not just recency
-- **Assistant message indexing** — searches both what you asked *and* what Claude answered
 
 ---
 
 ## Commands
 
-### Session recall
+### Query your session history
 
 ```bash
-claude-mem list --json --limit 10          # recent sessions
-claude-mem files --json --days 7           # recently touched files
-claude-mem search "auth refactor" --json   # full-text search
-claude-mem show <session-id> --json        # full session detail
+claude-mem list --json --limit 10          # recent sessions with summaries
+claude-mem files --json --days 7           # files you've been working on
+claude-mem search "database migration"     # full-text search across all sessions
+claude-mem show <session-id> --json        # full conversation detail
 ```
 
-### Index management
+### Manage the index
 
 ```bash
-claude-mem cc-index                # incremental update
-claude-mem cc-index --rebuild      # full rebuild from scratch
-claude-mem cc-index --status       # index freshness and session count
-claude-mem prune --days 90         # remove sessions older than N days
+claude-mem cc-index                        # incremental update (fast)
+claude-mem cc-index --rebuild              # full rebuild from scratch
+claude-mem cc-index --status               # check index health and freshness
+claude-mem prune --days 60                 # clean up old sessions
 ```
 
-### Health check
+### Hook and integration setup
 
 ```bash
-claude-mem health                  # 6-dimension health dashboard
-claude-mem health --json           # machine-readable output
+claude-mem install-mode                    # see what Claude Code surfaces are detected
+claude-mem install-mode --setup            # wire global SessionStart hook
+claude-mem install-mode --project          # add CLAUDE.md block to current repo
+claude-mem install-mode --mcp              # wire as MCP server in Claude Desktop
+claude-mem install-mode --dry-run          # preview any of the above without writing
 ```
 
-### Installation wiring
-
-```bash
-claude-mem install-mode                    # detect Claude Code surfaces (CLI, VS Code, JetBrains, Desktop)
-claude-mem install-mode --setup            # wire SessionStart hook into ~/.claude/settings.json
-claude-mem install-mode --project          # write CLAUDE.md block (per-repo, version-controlled)
-claude-mem install-mode --mcp              # wire MCP server into claude_desktop_config.json
-claude-mem install-mode --dry-run          # preview all changes without writing
-```
-
-### Export
+### Export and health
 
 ```bash
 claude-mem export --format md --days 30    # export sessions to markdown
 claude-mem export --format json            # export as JSON
-claude-mem export --session <id>           # export one specific session
+claude-mem health                          # 6-dimension health check
 ```
 
-### MCP server (optional)
+---
+
+## MCP Server
+
+`claude-mem` can run as an MCP tool server, making your session history queryable from Claude Desktop or any MCP-compatible host:
 
 ```bash
 pip install "claude-mem[mcp]"
-claude-mem serve                           # start stdio MCP server
-claude-mem install-mode --mcp              # auto-wire into Claude Desktop
+claude-mem install-mode --mcp              # writes entry to claude_desktop_config.json
 ```
 
-The MCP server exposes three tools — `session_list`, `session_search`, `session_show` — usable from any MCP-compatible host without shell access.
+Three tools are exposed: `session_list`, `session_search`, `session_show`.
 
 ---
 
-## Backends
+## Multiple Backends
 
-`claude-mem` works with multiple session sources:
+Beyond Claude Code, `claude-mem` can also read session history from other tools:
 
-| Backend | Source | Flag |
-|---|---|---|
-| **Claude Code** (default) | `~/.claude/projects/*.jsonl` | `--backend claude` |
-| **Cursor** | `workspaceStorage/*/state.vscdb` | `--backend cursor` |
-| **Aider** | `.aider.chat.history.md` | `--backend aider` |
-| **All** | Fan-out across all detected | `--backend all` |
+| Backend | Reads from |
+|---|---|
+| `claude` (default) | `~/.claude/projects/*.jsonl` |
+| `cursor` | Cursor workspace SQLite databases |
+| `aider` | `.aider.chat.history.md` files |
+| `all` | All of the above, merged |
 
 ```bash
-claude-mem --backend all list --json       # query all sources at once
-claude-mem --backend cursor search "auth"  # Cursor sessions only
+claude-mem --backend all list --json
+claude-mem --backend cursor search "refactor"
 ```
 
 ---
 
-## Tier System
+## Design
 
-Progressive disclosure — most prompts never need more than Tier 1.
-
-| Tier | Tokens | Command |
-|---|---|---|
-| 1 — cheap scan | ~50 | `list`, `files` |
-| 2 — focused recall | ~200 | `search` |
-| 3 — full detail | ~500 | `show`, `export` |
+- **Read-only** — never writes to Claude's own files under `~/.claude/projects/`
+- **Zero dependencies** — pure Python stdlib (`sqlite3`, `json`, `pathlib`, `argparse`)
+- **FTS5 full-text search** — indexes both your messages and Claude's responses
+- **Progressive disclosure** — `list` costs ~50 tokens, `search` ~200, `show` ~500
+- **Incremental indexing** — only processes new sessions since the last run
 
 ---
 
 ## Installation
 
 ```bash
-pip install claude-mem              # core (zero dependencies)
+pip install claude-mem              # zero-dependency core
 pip install "claude-mem[mcp]"       # with MCP server support
 ```
 
-Requires Python 3.10+.
-
----
-
-## What This Isn't
-
-- Not a vector database — SQLite FTS5 only, no embeddings
-- Not cross-machine sync — local index only
-- Not a replacement for project docs — recalls *what you did*, not *how the system works*
+Requires Python 3.10+. Works on macOS, Linux, and Windows.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Issues, PRs, and docs improvements welcome.
+Issues and PRs are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-mem"
+version = "1.0.0"
+description = "Session recall for Claude Code — zero-dependency CLI that gives Claude instant memory of past sessions"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Desi Villanueva", email = "217994822+dezgit2025@users.noreply.github.com"}]
+readme = "README.md"
+keywords = ["session", "recall", "context", "memory", "cli", "copilot"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = []
+
+[project.scripts]
+claude-mem = "session_recall.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/osamarehman/claude-mem"
+Repository = "https://github.com/osamarehman/claude-mem"
+Issues = "https://github.com/osamarehman/claude-mem/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+mcp = ["mcp>=1.0"]
+all = ["mcp>=1.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

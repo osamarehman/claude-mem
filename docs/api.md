@@ -353,7 +353,7 @@ Coverage, Repo Coverage, Concurrency, E2E, and Disclosure.
       "score": 9.2,
       "zone": "GREEN",
       "detail": "2.3h old",
-      "hint": "Use Copilot CLI — DB only updates from active sessions"
+      "hint": "Run claude-mem cc-index to refresh the session index"
     },
     {
       "name": "Latency",

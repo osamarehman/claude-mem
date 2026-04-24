@@ -11,14 +11,14 @@ pip install -e ".[dev]"
 pytest src/session_recall/tests/ -q
 ```
 
-All 159 tests should pass on a clean checkout.
+All 137 tests should pass on a clean checkout.
 
 ## What to Work On
 
 Check the [open issues](https://github.com/osamarehman/claude-mem/issues) — anything labeled `good first issue` is a good starting point. Documentation fixes and test coverage improvements are always appreciated.
 
 Larger ideas worth contributing:
-- New backends (Windsurf, Zed, VS Code Copilot Chat)
+- New backends (Windsurf, Zed, VS Code Chat)
 - Cross-machine sync via S3 / GitHub Gist
 - MCP server enhancements
 

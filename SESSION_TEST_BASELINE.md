@@ -24,7 +24,7 @@ A zero-dependency Python CLI that gives Claude Code persistent session memory. I
 | Session path decoder | `backends/claude_code/detect.py` |
 | Claude Code backend | `backends/claude_code/backend.py` |
 | Surface detection + hook wiring | `backends/claude_code/install.py` |
-| Health check (6 dimensions) | `backends/claude_code/health/` |
+| Health check (6 dimensions) | `backends/claude_code/health/` — index, freshness, corpus, latency, coverage, surfaces |
 | AllBackend aggregator | `backends/all.py` |
 | Cursor IDE backend | `backends/cursor.py` |
 | Aider backend | `backends/aider.py` |
@@ -43,7 +43,7 @@ A zero-dependency Python CLI that gives Claude Code persistent session memory. I
 
 ## Test suite
 
-**159 tests across 16 test files — all passing.**
+**137 tests across 14 test files — all passing.**
 
 | Test file | What it covers |
 |---|---|
@@ -52,11 +52,8 @@ A zero-dependency Python CLI that gives Claude Code persistent session memory. I
 | `test_cc_index.py` | FTS5 index build, search, show, assistant_summary column |
 | `test_cc_install.py` | Hook wiring, CLAUDE.md sentinel, MCP config wiring |
 | `test_cc_reader.py` | JSONL parsing, assistant_summary truncation |
-| `test_connect.py` | SQLite connection + WAL retry |
 | `test_cursor.py` | Cursor backend — workspace DB parsing |
-| `test_dim_disclosure.py` | Progressive disclosure health dimension |
 | `test_export.py` | Markdown and JSON export |
-| `test_health_scoring.py` | Health scoring weights |
 | `test_install_project.py` | CLAUDE.md write, idempotency, dry-run |
 | `test_mcp_install.py` | wire_mcp_config — new file, idempotent, merge, dry-run |
 | `test_parser.py` | CLI subcommand registration and TIER_MAP |
@@ -117,11 +114,12 @@ claude-mem --backend all list --json      # all sources merged
 
 | Hash | Description |
 |---|---|
+| `5b2bad1` | docs: rewrite SESSION_TEST_BASELINE.md |
 | `6e38f3a` | chore: rebrand all stale references to claude-mem |
 | `9eb9caa` | docs: rewrite CONTRIBUTING.md |
-| `564f152` | docs: rewrite README and description with original copy |
+| `564f152` | docs: rewrite README with original copy |
 | `5339213` | chore: SEO — keywords, classifiers, v1.0.2 |
-| `9187115` | feat: migrate session-recall to claude-mem — Claude-only fork |
+| `9187115` | feat: initial migration to claude-mem |
 
 ---
 

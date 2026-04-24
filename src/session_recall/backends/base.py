@@ -8,7 +8,7 @@ class SessionBackend(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
-        """Backend identifier: 'copilot' or 'claude'."""
+        """Backend identifier: 'claude', 'cursor', 'aider', or 'all'."""
 
     @abstractmethod
     def is_available(self) -> bool:
